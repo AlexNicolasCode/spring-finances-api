@@ -5,6 +5,5 @@ import com.finances.api.data.protocols.createTransactionRepository.ICreateTransa
 
 public class TransactionRepository implements ICreateTransactionRepository {
     public void createTransaction(CreateTransactionRepositoryDto dto) {
-        return;
     }
 }
