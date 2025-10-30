@@ -1,4 +1,4 @@
-package com.finances.finances;
+package com.finances.api;
 
 import org.springframework.boot.SpringApplication;
 
