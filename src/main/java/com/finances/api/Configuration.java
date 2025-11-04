@@ -1,4 +1,4 @@
-package com.finances.api.data;
+package com.finances.api;
 
 import com.finances.api.data.protocols.checkAccountByIdRepository.ICheckAccountByIdRepository;
 import com.finances.api.data.protocols.createTransactionRepository.ICreateTransactionRepository;
@@ -9,10 +9,9 @@ import com.finances.api.services.protocols.checkAccountByIdService.ICheckAccount
 import com.finances.api.infra.repositories.AccountRepository;
 import com.finances.api.services.protocols.createTransactionService.ICreateTransactionService;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class DataLayerConfiguration {
+@org.springframework.context.annotation.Configuration
+public class Configuration {
 
     @Bean
     public ICheckAccountByIdRepository getCheckAccountByIdRepository() {
