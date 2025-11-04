@@ -50,6 +50,6 @@ public class TransactionUseCase implements ICreateTransactionUseCase {
 
     private ResponseStatusException buildNotFoundExpectionAccount(UUID accountId) {
         String message = String.format("Account %s is invalid", accountId);
-        return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+        return new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, message);
     }
 }
