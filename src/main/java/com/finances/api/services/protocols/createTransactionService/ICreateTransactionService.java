@@ -1,5 +1,7 @@
 package com.finances.api.services.protocols.createTransactionService;
 
+import java.util.UUID;
+
 public interface ICreateTransactionService {
-    void createTransaction(CreateTransactionServiceDto dto);
+    UUID createTransaction(CreateTransactionServiceDto dto);
 }

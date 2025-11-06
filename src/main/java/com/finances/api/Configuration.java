@@ -1,15 +1,20 @@
 package com.finances.api;
 
+import com.finances.api.data.protocols.amqpProducer.AmqpProducer;
 import com.finances.api.data.protocols.checkAccountByIdRepository.ICheckAccountByIdRepository;
 import com.finances.api.data.protocols.createTransactionRepository.ICreateTransactionRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.ILoadTransactionsRepository;
 import com.finances.api.data.services.AccountService;
+import com.finances.api.data.services.AmqpService;
 import com.finances.api.data.services.TransactionService;
+import com.finances.api.infra.amqp.RabbitMqProducer;
 import com.finances.api.infra.repositories.TransactionRepository;
 import com.finances.api.services.protocols.checkAccountByIdService.ICheckAccountByIdService;
 import com.finances.api.infra.repositories.AccountRepository;
 import com.finances.api.services.protocols.createTransactionService.ICreateTransactionService;
 import com.finances.api.services.protocols.loadTransactionsService.ILoadTransactionsService;
+import com.finances.api.services.protocols.sendTransactionToQueueService.ISendTransactionToQueueService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
@@ -45,5 +50,15 @@ public class Configuration {
     @Primary
     public ICreateTransactionService getCreateTransactionService() {
         return new TransactionService(this.getCreateTransactionRepository(), this.getLoadTransactionsRepository());
+    }
+
+    @Bean
+    public AmqpProducer getAmqpProducer() {
+        return new RabbitMqProducer(new RabbitTemplate());
+    }
+
+    @Bean
+    public ISendTransactionToQueueService getSendTransactionToQueueService() {
+        return new AmqpService(this.getAmqpProducer());
     }
 }

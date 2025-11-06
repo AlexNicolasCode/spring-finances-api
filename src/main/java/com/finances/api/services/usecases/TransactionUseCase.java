@@ -10,6 +10,7 @@ import com.finances.api.domain.usecases.createTransaction.CreateTransactionUseCa
 import com.finances.api.domain.usecases.createTransaction.ICreateTransactionUseCase;
 import com.finances.api.services.protocols.loadTransactionsService.ILoadTransactionsService;
 import com.finances.api.services.protocols.loadTransactionsService.LoadTransactionsServiceOutputDto;
+import com.finances.api.services.protocols.sendTransactionToQueueService.ISendTransactionToQueueService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,15 +24,18 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
     private final ICheckAccountByIdService checkAccountByIdService;
     private final ICreateTransactionService createTransactionService;
     private final ILoadTransactionsService loadTransactionsService;
+    private final ISendTransactionToQueueService sendTransactionToQueueService;
 
     public TransactionUseCase(
             ICheckAccountByIdService checkAccountByIdService,
             ICreateTransactionService createTransactionService,
-            ILoadTransactionsService loadTransactionsService
+            ILoadTransactionsService loadTransactionsService,
+            ISendTransactionToQueueService sendTransactionToQueueService
     ) {
         this.checkAccountByIdService = checkAccountByIdService;
         this.createTransactionService = createTransactionService;
         this.loadTransactionsService = loadTransactionsService;
+        this.sendTransactionToQueueService = sendTransactionToQueueService;
     }
 
     public List<LoadTransactionsUseCaseOutputDto> loadTransactions(LoadTransactionsUseCaseInputDto dto) {
@@ -77,7 +81,8 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
                     dto.fromAccountId(),
                     dto.targetAccountId()
                 );
-        this.createTransactionService.createTransaction(transaction);
+        UUID transactionId = this.createTransactionService.createTransaction(transaction);
+        this.sendTransactionToQueueService.sendTransactionToQueue(transactionId);
     }
 
     private ResponseStatusException buildNotFoundExpectionAccount(UUID accountId) {

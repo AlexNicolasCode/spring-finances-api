@@ -4,7 +4,6 @@ import com.finances.api.data.protocols.createTransactionRepository.CreateTransac
 import com.finances.api.data.protocols.createTransactionRepository.ICreateTransactionRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.ILoadTransactionsRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.LoadTransactionsRepositoryOutputDto;
-import com.finances.api.domain.models.TransactionStatusEnum;
 import com.finances.api.infra.entities.TransactionEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,14 +17,14 @@ public class TransactionRepository implements ICreateTransactionRepository, ILoa
     @Autowired
     private CrudTransactionRepository repo;
 
-    public void createTransaction(CreateTransactionRepositoryDto dto) {
+    public UUID createTransaction(CreateTransactionRepositoryDto dto) {
         TransactionEntity entity = new TransactionEntity();
         entity.setType(dto.type());
         entity.setValue(dto.value());
         entity.setFromAccountId(dto.fromAccountId());
         entity.setTargetAccountId(dto.targetAccountId());
-        entity.setStatus(TransactionStatusEnum.PROCESSING);
-        this.repo.save(entity);
+        TransactionEntity storagedEntity = this.repo.save(entity);
+        return storagedEntity.getId();
     }
 
     public List<LoadTransactionsRepositoryOutputDto> loadTransactions(

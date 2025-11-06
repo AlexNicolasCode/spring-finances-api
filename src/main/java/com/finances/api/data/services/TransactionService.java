@@ -4,8 +4,6 @@ import com.finances.api.data.protocols.createTransactionRepository.CreateTransac
 import com.finances.api.data.protocols.createTransactionRepository.ICreateTransactionRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.ILoadTransactionsRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.LoadTransactionsRepositoryOutputDto;
-import com.finances.api.domain.usecases.loadTransactions.LoadTransactionsUseCaseInputDto;
-import com.finances.api.domain.usecases.loadTransactions.LoadTransactionsUseCaseOutputDto;
 import com.finances.api.services.protocols.createTransactionService.CreateTransactionServiceDto;
 import com.finances.api.services.protocols.createTransactionService.ICreateTransactionService;
 import com.finances.api.services.protocols.loadTransactionsService.ILoadTransactionsService;
@@ -27,14 +25,15 @@ public class TransactionService implements ICreateTransactionService, ILoadTrans
         this.loadTransactionsRepository = loadTransactionsRepository;
     }
 
-    public void createTransaction(CreateTransactionServiceDto dto) {
-        var repositoryDto = new CreateTransactionRepositoryDto(
+    public UUID createTransaction(CreateTransactionServiceDto dto) {
+        CreateTransactionRepositoryDto repositoryDto = new CreateTransactionRepositoryDto(
                     dto.value(),
                     dto.type(),
                     dto.fromAccountId(),
                     dto.targetAccountId()
             );
-        this.createTransactionRepository.createTransaction(repositoryDto);
+        UUID transactionId = this.createTransactionRepository.createTransaction(repositoryDto);
+        return transactionId;
     }
 
     public List<LoadTransactionsServiceOutputDto> loadTransactions(UUID accountId, String search) {

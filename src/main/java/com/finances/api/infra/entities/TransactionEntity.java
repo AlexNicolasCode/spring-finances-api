@@ -20,7 +20,8 @@ public class TransactionEntity {
 
     private String type;
 
-    private TransactionStatusEnum status;
+    @Enumerated(EnumType.STRING)
+    private TransactionStatusEnum status = TransactionStatusEnum.PROCESSING;
 
     private float value;
 
