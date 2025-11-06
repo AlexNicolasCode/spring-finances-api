@@ -1,27 +1,57 @@
 package com.finances.api.services.usecases;
 
+import com.finances.api.domain.usecases.loadTransactions.ILoadTransactionsUseCase;
+import com.finances.api.domain.usecases.loadTransactions.LoadTransactionsUseCaseInputDto;
+import com.finances.api.domain.usecases.loadTransactions.LoadTransactionsUseCaseOutputDto;
 import com.finances.api.services.protocols.createTransactionService.CreateTransactionServiceDto;
 import com.finances.api.services.protocols.createTransactionService.ICreateTransactionService;
 import com.finances.api.services.protocols.checkAccountByIdService.ICheckAccountByIdService;
 import com.finances.api.domain.usecases.createTransaction.CreateTransactionUseCaseDto;
 import com.finances.api.domain.usecases.createTransaction.ICreateTransactionUseCase;
+import com.finances.api.services.protocols.loadTransactionsService.ILoadTransactionsService;
+import com.finances.api.services.protocols.loadTransactionsService.LoadTransactionsServiceOutputDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
-public class TransactionUseCase implements ICreateTransactionUseCase {
+public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTransactionsUseCase {
     private final ICheckAccountByIdService checkAccountByIdService;
     private final ICreateTransactionService createTransactionService;
+    private final ILoadTransactionsService loadTransactionsService;
 
     public TransactionUseCase(
             ICheckAccountByIdService checkAccountByIdService,
-            ICreateTransactionService createTransactionService
+            ICreateTransactionService createTransactionService,
+            ILoadTransactionsService loadTransactionsService
     ) {
         this.checkAccountByIdService = checkAccountByIdService;
         this.createTransactionService = createTransactionService;
+        this.loadTransactionsService = loadTransactionsService;
+    }
+
+    public List<LoadTransactionsUseCaseOutputDto> loadTransactions(LoadTransactionsUseCaseInputDto dto) {
+        List<LoadTransactionsServiceOutputDto> transactions =  this.loadTransactionsService.loadTransactions(dto.accountId());
+        return this.buildResponse(transactions);
+    }
+
+    private List<LoadTransactionsUseCaseOutputDto> buildResponse(List<LoadTransactionsServiceOutputDto> transactions) {
+        List<LoadTransactionsUseCaseOutputDto> response = new ArrayList<>();
+        for (LoadTransactionsServiceOutputDto transaction : transactions) {
+            response.add(
+                    new LoadTransactionsUseCaseOutputDto(
+                            transaction.id(),
+                            transaction.targetName(),
+                            transaction.type(),
+                            transaction.value()
+                    )
+            );
+        }
+        return response;
     }
 
     public void createTransaction(CreateTransactionUseCaseDto dto) {

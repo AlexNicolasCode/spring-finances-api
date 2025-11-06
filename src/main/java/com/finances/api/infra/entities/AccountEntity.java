@@ -19,6 +19,8 @@ public class AccountEntity {
 
     private float balance;
 
+    private String name;
+
     @Column(name = "user_id")
     private UUID userId;
 
