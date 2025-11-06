@@ -1,13 +1,9 @@
 package com.finances.api.presentation.controllers;
 
-import com.finances.api.domain.usecases.createTransaction.CreateTransactionUseCaseDto;
-import com.finances.api.domain.usecases.createTransaction.ICreateTransactionUseCase;
 import com.finances.api.domain.usecases.loadTransactions.ILoadTransactionsUseCase;
 import com.finances.api.domain.usecases.loadTransactions.LoadTransactionsUseCaseInputDto;
 import com.finances.api.domain.usecases.loadTransactions.LoadTransactionsUseCaseOutputDto;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +22,7 @@ public class LoadTransactionsController {
     }
 
     @GetMapping
-    public List<LoadTransactionsUseCaseOutputDto> loadTransactions(@RequestParam("accountId") UUID accountId) {
-        System.out.println(accountId.toString());
+    public List<LoadTransactionsUseCaseOutputDto> loadTransactions(@RequestHeader("accountId") UUID accountId) {
         LoadTransactionsUseCaseInputDto input = new LoadTransactionsUseCaseInputDto(accountId);
         return this.loadTransactionsUseCase.loadTransactions(input);
     }
