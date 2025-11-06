@@ -48,7 +48,7 @@ public class TransactionService implements ICreateTransactionService, ILoadTrans
             response.add(
                     new LoadTransactionsServiceOutputDto(
                             transaction.id(),
-                            transaction.targetName(),
+                            transaction.accountName(),
                             transaction.type(),
                             transaction.value()
                     )

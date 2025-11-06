@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public record LoadTransactionsServiceOutputDto(
         UUID id,
-        String targetName,
+        String accountName,
         String type,
         String value
 ) {}

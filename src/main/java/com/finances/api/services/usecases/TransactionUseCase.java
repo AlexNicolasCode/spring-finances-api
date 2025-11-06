@@ -45,7 +45,7 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
             response.add(
                     new LoadTransactionsUseCaseOutputDto(
                             transaction.id(),
-                            transaction.targetName(),
+                            transaction.accountName(),
                             transaction.type(),
                             transaction.value()
                     )
