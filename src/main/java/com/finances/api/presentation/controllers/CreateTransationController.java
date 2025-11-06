@@ -22,7 +22,6 @@ public class CreateTransationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createTransaction(@Valid @RequestBody CreateTransactionUseCaseDto dto) {
-        System.out.println(dto.toString());
         this.createTransactionUseCase.createTransaction(dto);
     }
 }
