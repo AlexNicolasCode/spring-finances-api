@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS transactions (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       type VARCHAR(255) NOT NULL,
       value NUMERIC(15,2) NOT NULL,
+      status VARCHAR(255) NOT NULL,
       from_account_id UUID NOT NULL,
       target_account_id UUID NOT NULL,
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

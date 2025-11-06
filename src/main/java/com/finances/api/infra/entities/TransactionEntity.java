@@ -1,5 +1,6 @@
 package com.finances.api.infra.entities;
 
+import com.finances.api.domain.models.TransactionStatusEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -18,6 +19,8 @@ public class TransactionEntity {
     private UUID id;
 
     private String type;
+
+    private TransactionStatusEnum status;
 
     private float value;
 

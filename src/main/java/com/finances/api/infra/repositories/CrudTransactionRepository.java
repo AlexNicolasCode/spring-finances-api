@@ -19,6 +19,7 @@ public interface CrudTransactionRepository extends CrudRepository<TransactionEnt
             a.name,
             t.type,
             CAST(t.value AS string),
+            t.status,
             (t.fromAccountId = :accountId)
         )
         FROM transactions t

@@ -4,6 +4,7 @@ import com.finances.api.data.protocols.createTransactionRepository.CreateTransac
 import com.finances.api.data.protocols.createTransactionRepository.ICreateTransactionRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.ILoadTransactionsRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.LoadTransactionsRepositoryOutputDto;
+import com.finances.api.domain.models.TransactionStatusEnum;
 import com.finances.api.infra.entities.TransactionEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class TransactionRepository implements ICreateTransactionRepository, ILoa
         entity.setValue(dto.value());
         entity.setFromAccountId(dto.fromAccountId());
         entity.setTargetAccountId(dto.targetAccountId());
+        entity.setStatus(TransactionStatusEnum.PROCESSING);
         this.repo.save(entity);
     }
 
