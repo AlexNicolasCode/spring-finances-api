@@ -6,6 +6,7 @@ public record LoadTransactionsUseCaseOutputDto(
         UUID id,
         String accountName,
         String type,
-        String value
+        String value,
+        Boolean isSender
 ) {
 }

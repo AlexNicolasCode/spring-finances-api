@@ -50,7 +50,8 @@ public class TransactionService implements ICreateTransactionService, ILoadTrans
                             transaction.id(),
                             transaction.accountName(),
                             transaction.type(),
-                            transaction.value()
+                            transaction.value(),
+                            transaction.isSender()
                     )
             );
         }

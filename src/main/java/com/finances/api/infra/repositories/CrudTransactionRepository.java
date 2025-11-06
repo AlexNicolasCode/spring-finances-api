@@ -18,11 +18,12 @@ public interface CrudTransactionRepository extends CrudRepository<TransactionEnt
             t.id,
             a.name,
             t.type,
-            CAST(t.value AS string)
+            CAST(t.value AS string),
+            (t.fromAccountId = :accountId)
         )
         FROM transactions t
         INNER JOIN accounts a ON t.targetAccountId = a.id
-        WHERE t.fromAccountId = :accountId
+        WHERE (t.fromAccountId = :accountId OR t.targetAccountId = :accountId)
             AND a.name ILIKE %:search%
                 OR t.type ILIKE %:search%
         ORDER BY t.createdAt DESC

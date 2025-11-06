@@ -6,5 +6,6 @@ public record LoadTransactionsServiceOutputDto(
         UUID id,
         String accountName,
         String type,
-        String value
+        String value,
+        Boolean isSender
 ) {}
