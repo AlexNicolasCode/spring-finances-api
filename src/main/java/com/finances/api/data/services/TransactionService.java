@@ -37,8 +37,8 @@ public class TransactionService implements ICreateTransactionService, ILoadTrans
         this.createTransactionRepository.createTransaction(repositoryDto);
     }
 
-    public List<LoadTransactionsServiceOutputDto> loadTransactions(UUID accountId) {
-        List<LoadTransactionsRepositoryOutputDto> transactions = this.loadTransactionsRepository.loadTransactions(1, 30, accountId);
+    public List<LoadTransactionsServiceOutputDto> loadTransactions(UUID accountId, String search) {
+        List<LoadTransactionsRepositoryOutputDto> transactions = this.loadTransactionsRepository.loadTransactions(1, 30, accountId, search);
         return this.buildResponse(transactions);
     }
 

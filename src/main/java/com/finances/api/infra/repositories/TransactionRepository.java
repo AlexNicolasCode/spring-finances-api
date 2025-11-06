@@ -4,7 +4,6 @@ import com.finances.api.data.protocols.createTransactionRepository.CreateTransac
 import com.finances.api.data.protocols.createTransactionRepository.ICreateTransactionRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.ILoadTransactionsRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.LoadTransactionsRepositoryOutputDto;
-import com.finances.api.domain.usecases.loadTransactions.LoadTransactionsUseCaseOutputDto;
 import com.finances.api.infra.entities.TransactionEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,12 @@ public class TransactionRepository implements ICreateTransactionRepository, ILoa
         this.repo.save(entity);
     }
 
-    public List<LoadTransactionsRepositoryOutputDto> loadTransactions(int page, int size, UUID accountId) {
-        return this.repo.loadByAccountId(accountId);
+    public List<LoadTransactionsRepositoryOutputDto> loadTransactions(
+            int page,
+            int size,
+            UUID accountId,
+            String search
+    ) {
+        return this.repo.loadByAccountId(accountId, search);
     }
 }

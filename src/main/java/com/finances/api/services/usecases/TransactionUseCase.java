@@ -35,7 +35,7 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
     }
 
     public List<LoadTransactionsUseCaseOutputDto> loadTransactions(LoadTransactionsUseCaseInputDto dto) {
-        List<LoadTransactionsServiceOutputDto> transactions =  this.loadTransactionsService.loadTransactions(dto.accountId());
+        List<LoadTransactionsServiceOutputDto> transactions =  this.loadTransactionsService.loadTransactions(dto.accountId(), dto.search());
         return this.buildResponse(transactions);
     }
 

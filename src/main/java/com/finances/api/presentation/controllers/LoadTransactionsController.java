@@ -22,8 +22,12 @@ public class LoadTransactionsController {
     }
 
     @GetMapping
-    public List<LoadTransactionsUseCaseOutputDto> loadTransactions(@RequestHeader("accountId") UUID accountId) {
-        LoadTransactionsUseCaseInputDto input = new LoadTransactionsUseCaseInputDto(accountId);
-        return this.loadTransactionsUseCase.loadTransactions(input);
+    public List<LoadTransactionsUseCaseOutputDto> loadTransactions(
+            @RequestHeader("accountId") UUID accountId,
+            @RequestParam("search") String search
+    ) {
+        return this.loadTransactionsUseCase.loadTransactions(
+                new LoadTransactionsUseCaseInputDto(accountId, search)
+        );
     }
 }

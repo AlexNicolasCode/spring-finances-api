@@ -4,5 +4,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ILoadTransactionsRepository {
-    List<LoadTransactionsRepositoryOutputDto> loadTransactions(int page, int size, UUID accountId);
+    List<LoadTransactionsRepositoryOutputDto> loadTransactions(int page, int size, UUID accountId, String search);
 }
