@@ -28,7 +28,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTransactionsUseCase, IHandleNewTransactionUsecase {
+public class TransactionUseCase implements
+        ICreateTransactionUseCase,
+        ILoadTransactionsUseCase,
+        IHandleNewTransactionUsecase
+{
     private final ICheckAccountByIdService checkAccountByIdService;
     private final ICreateTransactionService createTransactionService;
     private final ILoadTransactionsService loadTransactionsService;
@@ -91,6 +95,13 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
                 this.checkAccountByIdService.checkAccountById(dto.targetAccountId());
         if (!hasTargetAccount) {
             throw buildNotFoundExpectionAccount(dto.targetAccountId());
+        }
+        LoadAccountBalanceByIdServiceOutputDto fromAccountBalance = this.loadAccountBalanceByIdService.loadAccountBalanceById(dto.fromAccountId());
+        if (fromAccountBalance.id() == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Account balance not found");
+        }
+        if (dto.value() > fromAccountBalance.balance()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Insufficient balance to execute transaction");
         }
         CreateTransactionServiceDto transaction = new CreateTransactionServiceDto(
                     dto.value(),
