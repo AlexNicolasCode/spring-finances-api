@@ -19,6 +19,7 @@ import com.finances.api.services.protocols.loadAccountBalanceService.ILoadAccoun
 import com.finances.api.services.protocols.loadTransactionByIdService.ILoadTransactionByIdService;
 import com.finances.api.services.protocols.loadTransactionsService.ILoadTransactionsService;
 import com.finances.api.services.protocols.sendTransactionToQueueService.ISendTransactionToQueueService;
+import com.finances.api.services.protocols.transferValueBetweenAccountService.ITransferValueBetweenAccountService;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -45,6 +46,15 @@ public class Configuration {
 
     @Bean
     public ICheckAccountByIdService getCheckAccountById() {
+        return new AccountService(
+                this.getCheckAccountByIdRepository(),
+                this.getTransferValueBetweenAccountRepository(),
+                this.getLoadAccountBalanceByIdRepository()
+        );
+    }
+
+    @Bean
+    public ITransferValueBetweenAccountService getTransferValueBetweenAccountService() {
         return new AccountService(
                 this.getCheckAccountByIdRepository(),
                 this.getTransferValueBetweenAccountRepository(),
