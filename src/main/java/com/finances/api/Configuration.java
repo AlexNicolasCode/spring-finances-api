@@ -54,15 +54,6 @@ public class Configuration {
     }
 
     @Bean
-    public ITransferValueBetweenAccountService getTransferValueBetweenAccountService() {
-        return new AccountService(
-                this.getCheckAccountByIdRepository(),
-                this.getTransferValueBetweenAccountRepository(),
-                this.getLoadAccountBalanceByIdRepository()
-        );
-    }
-
-    @Bean
     public ILoadTransactionsService getLoadTransactionsService() {
         return new TransactionService(
                 this.getCreateTransactionRepository(),
