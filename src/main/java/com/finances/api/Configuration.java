@@ -3,6 +3,7 @@ package com.finances.api;
 import com.finances.api.data.protocols.amqpProducer.AmqpProducer;
 import com.finances.api.data.protocols.checkAccountByIdRepository.ICheckAccountByIdRepository;
 import com.finances.api.data.protocols.createTransactionRepository.ICreateTransactionRepository;
+import com.finances.api.data.protocols.loadAccountBalanceByIdRepository.ILoadAccountBalanceByIdRepository;
 import com.finances.api.data.protocols.loadTransactionByIdRepository.ILoadTransactionByIdRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.ILoadTransactionsRepository;
 import com.finances.api.data.protocols.transferValueBetweenAccountRepository.ITransferValueBetweenAccountRepository;
@@ -14,10 +15,10 @@ import com.finances.api.infra.repositories.TransactionRepository;
 import com.finances.api.services.protocols.checkAccountByIdService.ICheckAccountByIdService;
 import com.finances.api.infra.repositories.AccountRepository;
 import com.finances.api.services.protocols.createTransactionService.ICreateTransactionService;
+import com.finances.api.services.protocols.loadAccountBalanceService.ILoadAccountBalanceByIdService;
 import com.finances.api.services.protocols.loadTransactionByIdService.ILoadTransactionByIdService;
 import com.finances.api.services.protocols.loadTransactionsService.ILoadTransactionsService;
 import com.finances.api.services.protocols.sendTransactionToQueueService.ISendTransactionToQueueService;
-import com.finances.api.services.protocols.transferValueBetweenAccountService.ITransferValueBetweenAccountService;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -33,8 +34,22 @@ public class Configuration {
     }
 
     @Bean
+    @Primary
+    public ILoadAccountBalanceByIdService getLoadAccountBalanceByIdService() {
+        return new AccountService(
+                this.getCheckAccountByIdRepository(),
+                this.getTransferValueBetweenAccountRepository(),
+                this.getLoadAccountBalanceByIdRepository()
+        );
+    }
+
+    @Bean
     public ICheckAccountByIdService getCheckAccountById() {
-        return new AccountService(this.getCheckAccountByIdRepository(), this.getTransferValueBetweenAccountRepository());
+        return new AccountService(
+                this.getCheckAccountByIdRepository(),
+                this.getTransferValueBetweenAccountRepository(),
+                this.getLoadAccountBalanceByIdRepository()
+        );
     }
 
     @Bean
@@ -72,6 +87,11 @@ public class Configuration {
 
     @Bean
     public ITransferValueBetweenAccountRepository getTransferValueBetweenAccountRepository() {
+        return new AccountRepository();
+    }
+
+    @Bean
+    public ILoadAccountBalanceByIdRepository getLoadAccountBalanceByIdRepository() {
         return new AccountRepository();
     }
 

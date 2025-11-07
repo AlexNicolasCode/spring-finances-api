@@ -1,6 +1,8 @@
 package com.finances.api.infra.repositories;
 
 import com.finances.api.data.protocols.checkAccountByIdRepository.ICheckAccountByIdRepository;
+import com.finances.api.data.protocols.loadAccountBalanceByIdRepository.ILoadAccountBalanceByIdRepository;
+import com.finances.api.data.protocols.loadAccountBalanceByIdRepository.LoadAccountBalanceByIdRepositoryOutputDto;
 import com.finances.api.data.protocols.transferValueBetweenAccountRepository.ITransferValueBetweenAccountRepository;
 import com.finances.api.data.protocols.transferValueBetweenAccountRepository.TransferValueBetweenAccountRepositoryInputDto;
 import com.finances.api.infra.entities.AccountEntity;
@@ -14,7 +16,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class AccountRepository implements ICheckAccountByIdRepository, ITransferValueBetweenAccountRepository {
+public class AccountRepository implements
+        ICheckAccountByIdRepository,
+        ITransferValueBetweenAccountRepository,
+        ILoadAccountBalanceByIdRepository
+{
     private final Logger logger = LoggerFactory.getLogger(AccountRepository.class);
 
     @Autowired
@@ -48,5 +54,9 @@ public class AccountRepository implements ICheckAccountByIdRepository, ITransfer
         );
         this.repo.save(targetAccount.get());
         this.repo.save(fromAccount.get());
+    }
+
+    public LoadAccountBalanceByIdRepositoryOutputDto loadAccountBalanceById(UUID accountId) {
+        return this.repo.loadAccountBalanceById(accountId);
     }
 }

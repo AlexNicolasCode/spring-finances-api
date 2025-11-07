@@ -10,6 +10,8 @@ import com.finances.api.services.protocols.createTransactionService.ICreateTrans
 import com.finances.api.services.protocols.checkAccountByIdService.ICheckAccountByIdService;
 import com.finances.api.domain.usecases.createTransaction.CreateTransactionUseCaseDto;
 import com.finances.api.domain.usecases.createTransaction.ICreateTransactionUseCase;
+import com.finances.api.services.protocols.loadAccountBalanceService.ILoadAccountBalanceByIdService;
+import com.finances.api.services.protocols.loadAccountBalanceService.LoadAccountBalanceByIdServiceOutputDto;
 import com.finances.api.services.protocols.loadTransactionByIdService.ILoadTransactionByIdService;
 import com.finances.api.services.protocols.loadTransactionByIdService.LoadTransactionByIdServiceOutputDto;
 import com.finances.api.services.protocols.loadTransactionsService.ILoadTransactionsService;
@@ -33,6 +35,7 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
     private final ISendTransactionToQueueService sendTransactionToQueueService;
     private final ILoadTransactionByIdService loadTransactionByIdService;
     private final ITransferValueBetweenAccountService transferValueBetweenAccountService;
+    private final ILoadAccountBalanceByIdService loadAccountBalanceByIdService;
 
     public TransactionUseCase(
             ICheckAccountByIdService checkAccountByIdService,
@@ -40,7 +43,8 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
             ILoadTransactionsService loadTransactionsService,
             ISendTransactionToQueueService sendTransactionToQueueService,
             ILoadTransactionByIdService loadTransactionByIdService,
-            ITransferValueBetweenAccountService transferValueBetweenAccountService
+            ITransferValueBetweenAccountService transferValueBetweenAccountService,
+            ILoadAccountBalanceByIdService loadAccountBalanceByIdService
     ) {
         this.checkAccountByIdService = checkAccountByIdService;
         this.createTransactionService = createTransactionService;
@@ -48,6 +52,7 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
         this.sendTransactionToQueueService = sendTransactionToQueueService;
         this.loadTransactionByIdService = loadTransactionByIdService;
         this.transferValueBetweenAccountService = transferValueBetweenAccountService;
+        this.loadAccountBalanceByIdService = loadAccountBalanceByIdService;
     }
 
     public List<LoadTransactionsUseCaseOutputDto> loadTransactions(LoadTransactionsUseCaseInputDto dto) {
@@ -122,6 +127,13 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
             if (!hasTargetAccount) {
                 throw buildNotFoundExpectionAccount(transaction.targetAccountId());
             }
+            LoadAccountBalanceByIdServiceOutputDto fromAccountBalance = this.loadAccountBalanceByIdService.loadAccountBalanceById(transaction.fromAccountId());
+            if (fromAccountBalance.id() == null) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Account balance not found");
+            }
+            if (transaction.value() > fromAccountBalance.balance()) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Insufficient balance to execute transaction");
+            }
             this.transferValueBetweenAccountService.transferValueBetweenAccount(
                     new TransferValueBetweenAccountServiceInputDto(
                             transaction.id(),
@@ -130,6 +142,10 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
                             transaction.value()
                     )
             );
-        } catch (Exception e) {}
+        } catch(ResponseStatusException responseStatusException) {
+            System.err.println(responseStatusException.getMessage());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 }
