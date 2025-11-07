@@ -108,6 +108,20 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
             if (transaction == null || !transaction.status().equals(TransactionStatusEnum.PROCESSING)) {
                 return;
             }
+            boolean isInvalidTransaction = transaction.fromAccountId().equals(transaction.targetAccountId());
+            if (isInvalidTransaction) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Account IDs are not the same");
+            }
+            boolean hasFromAccount =
+                    this.checkAccountByIdService.checkAccountById(transaction.fromAccountId());
+            if (!hasFromAccount) {
+                throw buildNotFoundExpectionAccount(transaction.fromAccountId());
+            }
+            boolean hasTargetAccount =
+                    this.checkAccountByIdService.checkAccountById(transaction.targetAccountId());
+            if (!hasTargetAccount) {
+                throw buildNotFoundExpectionAccount(transaction.targetAccountId());
+            }
             this.transferValueBetweenAccountService.transferValueBetweenAccount(
                     new TransferValueBetweenAccountServiceInputDto(
                             transaction.id(),
