@@ -1,5 +1,7 @@
 package com.finances.api.services.usecases;
 
+import com.finances.api.domain.models.TransactionStatusEnum;
+import com.finances.api.domain.usecases.handleNewTransaction.IHandleNewTransactionUsecase;
 import com.finances.api.domain.usecases.loadTransactions.ILoadTransactionsUseCase;
 import com.finances.api.domain.usecases.loadTransactions.LoadTransactionsUseCaseInputDto;
 import com.finances.api.domain.usecases.loadTransactions.LoadTransactionsUseCaseOutputDto;
@@ -8,9 +10,13 @@ import com.finances.api.services.protocols.createTransactionService.ICreateTrans
 import com.finances.api.services.protocols.checkAccountByIdService.ICheckAccountByIdService;
 import com.finances.api.domain.usecases.createTransaction.CreateTransactionUseCaseDto;
 import com.finances.api.domain.usecases.createTransaction.ICreateTransactionUseCase;
+import com.finances.api.services.protocols.loadTransactionByIdService.ILoadTransactionByIdService;
+import com.finances.api.services.protocols.loadTransactionByIdService.LoadTransactionByIdServiceOutputDto;
 import com.finances.api.services.protocols.loadTransactionsService.ILoadTransactionsService;
 import com.finances.api.services.protocols.loadTransactionsService.LoadTransactionsServiceOutputDto;
 import com.finances.api.services.protocols.sendTransactionToQueueService.ISendTransactionToQueueService;
+import com.finances.api.services.protocols.transferValueBetweenAccountService.ITransferValueBetweenAccountService;
+import com.finances.api.services.protocols.transferValueBetweenAccountService.TransferValueBetweenAccountServiceInputDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,22 +26,28 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTransactionsUseCase {
+public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTransactionsUseCase, IHandleNewTransactionUsecase {
     private final ICheckAccountByIdService checkAccountByIdService;
     private final ICreateTransactionService createTransactionService;
     private final ILoadTransactionsService loadTransactionsService;
     private final ISendTransactionToQueueService sendTransactionToQueueService;
+    private final ILoadTransactionByIdService loadTransactionByIdService;
+    private final ITransferValueBetweenAccountService transferValueBetweenAccountService;
 
     public TransactionUseCase(
             ICheckAccountByIdService checkAccountByIdService,
             ICreateTransactionService createTransactionService,
             ILoadTransactionsService loadTransactionsService,
-            ISendTransactionToQueueService sendTransactionToQueueService
+            ISendTransactionToQueueService sendTransactionToQueueService,
+            ILoadTransactionByIdService loadTransactionByIdService,
+            ITransferValueBetweenAccountService transferValueBetweenAccountService
     ) {
         this.checkAccountByIdService = checkAccountByIdService;
         this.createTransactionService = createTransactionService;
         this.loadTransactionsService = loadTransactionsService;
         this.sendTransactionToQueueService = sendTransactionToQueueService;
+        this.loadTransactionByIdService = loadTransactionByIdService;
+        this.transferValueBetweenAccountService = transferValueBetweenAccountService;
     }
 
     public List<LoadTransactionsUseCaseOutputDto> loadTransactions(LoadTransactionsUseCaseInputDto dto) {
@@ -88,5 +100,22 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
     private ResponseStatusException buildNotFoundExpectionAccount(UUID accountId) {
         String message = String.format("Account %s is invalid", accountId);
         return new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, message);
+    }
+
+    public void handleNewTransaction(UUID transactionId) {
+        try {
+            LoadTransactionByIdServiceOutputDto transaction = this.loadTransactionByIdService.loadTransactionById(transactionId);
+            if (transaction == null || !transaction.status().equals(TransactionStatusEnum.PROCESSING)) {
+                return;
+            }
+            this.transferValueBetweenAccountService.transferValueBetweenAccount(
+                    new TransferValueBetweenAccountServiceInputDto(
+                            transaction.id(),
+                            transaction.targetAccountId(),
+                            transaction.fromAccountId(),
+                            transaction.value()
+                    )
+            );
+        } catch (Exception e) {}
     }
 }
