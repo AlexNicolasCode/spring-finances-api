@@ -26,7 +26,7 @@ public interface CrudTransactionRepository extends CrudRepository<TransactionEnt
         INNER JOIN accounts a ON t.targetAccountId = a.id
         WHERE (t.fromAccountId = :accountId OR t.targetAccountId = :accountId)
             AND a.name ILIKE %:search%
-                OR t.type ILIKE %:search%
+                OR CAST(t.type as string) ILIKE %:search%
         ORDER BY t.createdAt DESC
     """)
     List<LoadTransactionsRepositoryOutputDto> loadByAccountId(

@@ -1,6 +1,7 @@
 package com.finances.api.infra.entities;
 
 import com.finances.api.domain.models.TransactionStatusEnum;
+import com.finances.api.domain.models.TransactionTypeEnum;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -18,7 +19,8 @@ public class TransactionEntity {
     @Getter
     private UUID id;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private TransactionTypeEnum type;
 
     @Enumerated(EnumType.STRING)
     private TransactionStatusEnum status = TransactionStatusEnum.PROCESSING;

@@ -1,8 +1,8 @@
 package com.finances.api.domain.usecases.createTransaction;
 
+import com.finances.api.domain.models.TransactionTypeEnum;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
@@ -12,8 +12,7 @@ public record CreateTransactionUseCaseDto(
         float value,
 
         @NotNull(message = "Transaction type cannot be null")
-        @Size(min = 1, max = 50, message = "Transaction type must be between 1 and 50 characters")
-        String type,
+        TransactionTypeEnum type,
 
         @NotNull(message = "From account ID cannot be null")
         UUID fromAccountId,
