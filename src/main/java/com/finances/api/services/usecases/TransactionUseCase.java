@@ -75,7 +75,7 @@ public class TransactionUseCase implements ICreateTransactionUseCase, ILoadTrans
         if (!hasTargetAccount) {
             throw buildNotFoundExpectionAccount(dto.targetAccountId());
         }
-        var transaction = new CreateTransactionServiceDto(
+        CreateTransactionServiceDto transaction = new CreateTransactionServiceDto(
                     dto.value(),
                     dto.type(),
                     dto.fromAccountId(),
