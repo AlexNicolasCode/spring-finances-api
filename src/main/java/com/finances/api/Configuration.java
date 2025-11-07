@@ -14,6 +14,8 @@ import com.finances.api.infra.repositories.AccountRepository;
 import com.finances.api.services.protocols.createTransactionService.ICreateTransactionService;
 import com.finances.api.services.protocols.loadTransactionsService.ILoadTransactionsService;
 import com.finances.api.services.protocols.sendTransactionToQueueService.ISendTransactionToQueueService;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -54,7 +56,15 @@ public class Configuration {
 
     @Bean
     public AmqpProducer getAmqpProducer() {
-        return new RabbitMqProducer(new RabbitTemplate());
+        return new RabbitMqProducer(new RabbitTemplate(this.connectionFactory()));
+    }
+
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory("localhost");
+        connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");
+        return connectionFactory;
     }
 
     @Bean
