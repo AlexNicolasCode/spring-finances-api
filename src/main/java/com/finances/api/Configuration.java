@@ -4,22 +4,25 @@ import com.finances.api.data.protocols.amqpProducer.AmqpProducer;
 import com.finances.api.data.protocols.checkAccountByIdRepository.ICheckAccountByIdRepository;
 import com.finances.api.data.protocols.createTransactionRepository.ICreateTransactionRepository;
 import com.finances.api.data.protocols.loadAccountBalanceByIdRepository.ILoadAccountBalanceByIdRepository;
+import com.finances.api.data.protocols.loadAccountsByUserIdRepository.ILoadAccountsByUserIdRepository;
 import com.finances.api.data.protocols.loadTransactionByIdRepository.ILoadTransactionByIdRepository;
 import com.finances.api.data.protocols.loadTransactionsRepository.ILoadTransactionsRepository;
 import com.finances.api.data.protocols.transferValueBetweenAccountRepository.ITransferValueBetweenAccountRepository;
 import com.finances.api.data.services.AccountService;
 import com.finances.api.data.services.AmqpService;
 import com.finances.api.data.services.TransactionService;
+import com.finances.api.domain.usecases.loadAccountsByUserId.ILoadAccountsByUserIdUseCase;
 import com.finances.api.infra.amqp.RabbitMqProducer;
 import com.finances.api.infra.repositories.TransactionRepository;
 import com.finances.api.services.protocols.checkAccountByIdService.ICheckAccountByIdService;
 import com.finances.api.infra.repositories.AccountRepository;
 import com.finances.api.services.protocols.createTransactionService.ICreateTransactionService;
 import com.finances.api.services.protocols.loadAccountBalanceService.ILoadAccountBalanceByIdService;
+import com.finances.api.services.protocols.loadAccountsByUserIdService.ILoadAccountsByUserIdService;
 import com.finances.api.services.protocols.loadTransactionByIdService.ILoadTransactionByIdService;
 import com.finances.api.services.protocols.loadTransactionsService.ILoadTransactionsService;
 import com.finances.api.services.protocols.sendTransactionToQueueService.ISendTransactionToQueueService;
-import com.finances.api.services.protocols.transferValueBetweenAccountService.ITransferValueBetweenAccountService;
+import com.finances.api.services.usecases.AccountUseCase;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -40,7 +43,8 @@ public class Configuration {
         return new AccountService(
                 this.getCheckAccountByIdRepository(),
                 this.getTransferValueBetweenAccountRepository(),
-                this.getLoadAccountBalanceByIdRepository()
+                this.getLoadAccountBalanceByIdRepository(),
+                this.getLoadAccountsByUserIdRepository()
         );
     }
 
@@ -49,7 +53,18 @@ public class Configuration {
         return new AccountService(
                 this.getCheckAccountByIdRepository(),
                 this.getTransferValueBetweenAccountRepository(),
-                this.getLoadAccountBalanceByIdRepository()
+                this.getLoadAccountBalanceByIdRepository(),
+                this.getLoadAccountsByUserIdRepository()
+        );
+    }
+
+    @Bean
+    public ILoadAccountsByUserIdService getLoadAccountsByUserIdService() {
+        return new AccountService(
+                this.getCheckAccountByIdRepository(),
+                this.getTransferValueBetweenAccountRepository(),
+                this.getLoadAccountBalanceByIdRepository(),
+                this.getLoadAccountsByUserIdRepository()
         );
     }
 
@@ -84,6 +99,11 @@ public class Configuration {
     @Bean
     public ILoadTransactionsRepository getLoadTransactionsRepository() {
         return new TransactionRepository();
+    }
+
+    @Bean
+    public ILoadAccountsByUserIdRepository getLoadAccountsByUserIdRepository() {
+        return new AccountRepository();
     }
 
     @Bean
@@ -122,5 +142,10 @@ public class Configuration {
     @Bean
     public ISendTransactionToQueueService getSendTransactionToQueueService() {
         return new AmqpService(this.getAmqpProducer());
+    }
+
+    @Bean
+    public ILoadAccountsByUserIdUseCase getLoadAccountsByUserIdUseCase() {
+        return new AccountUseCase(this.getLoadAccountsByUserIdService());
     }
 }

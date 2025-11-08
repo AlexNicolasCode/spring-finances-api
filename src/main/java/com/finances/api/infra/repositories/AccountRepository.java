@@ -3,6 +3,8 @@ package com.finances.api.infra.repositories;
 import com.finances.api.data.protocols.checkAccountByIdRepository.ICheckAccountByIdRepository;
 import com.finances.api.data.protocols.loadAccountBalanceByIdRepository.ILoadAccountBalanceByIdRepository;
 import com.finances.api.data.protocols.loadAccountBalanceByIdRepository.LoadAccountBalanceByIdRepositoryOutputDto;
+import com.finances.api.data.protocols.loadAccountsByUserIdRepository.ILoadAccountsByUserIdRepository;
+import com.finances.api.data.protocols.loadAccountsByUserIdRepository.LoadAccountsByUserIdRepositoryOutputDto;
 import com.finances.api.data.protocols.transferValueBetweenAccountRepository.ITransferValueBetweenAccountRepository;
 import com.finances.api.data.protocols.transferValueBetweenAccountRepository.TransferValueBetweenAccountRepositoryInputDto;
 import com.finances.api.infra.entities.AccountEntity;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,7 +22,8 @@ import java.util.UUID;
 public class AccountRepository implements
         ICheckAccountByIdRepository,
         ITransferValueBetweenAccountRepository,
-        ILoadAccountBalanceByIdRepository
+        ILoadAccountBalanceByIdRepository,
+        ILoadAccountsByUserIdRepository
 {
     private final Logger logger = LoggerFactory.getLogger(AccountRepository.class);
 
@@ -58,5 +62,9 @@ public class AccountRepository implements
 
     public LoadAccountBalanceByIdRepositoryOutputDto loadAccountBalanceById(UUID accountId) {
         return this.repo.loadAccountBalanceById(accountId);
+    }
+
+    public List<LoadAccountsByUserIdRepositoryOutputDto> loadAccountsByUserId(UUID userId) {
+        return this.repo.loadAccountsByUserId(userId);
     }
 }
